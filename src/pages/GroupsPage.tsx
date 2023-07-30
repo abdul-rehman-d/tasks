@@ -4,6 +4,8 @@ import { onValue, push, ref } from "firebase/database"
 
 import { AuthContext } from "../contexts/AuthProvider"
 import { db } from "../firebase";
+import CreateGroupModal from "../components/modals/CreateGroupModal";
+import JoinGroupModal from "../components/modals/JoinGroupModal";
 
 function GroupsPage() {
   const { currentUser } = useContext(AuthContext);
@@ -58,33 +60,38 @@ function GroupsPage() {
     }
   }, [currentUser]);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const name = event.currentTarget.groupName.value;
-    if (name) {
-      createGroup(name);
-    }
-  }
 
   return (
-    <>
-      <h1>Groups</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Group Name</label>
-        <input type="text" id="name" name="groupName" />
-        <button type="submit">Create</button>
-      </form>
-      <ul>
-        {groups.map(group => (
-          <li key={group.id}>
-            <Link to={`/group/${group.id}`}>
-              {group.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-    </>
+    <div className="flex justify-center p-4">
+      <div className="w-full max-w-lg">
+        <h1 className="text-3xl font-semibold text-center text-primary mb-2">
+          Groups
+        </h1>
+        <div className="flex justify-end gap-2 mb-2">
+          <button className="btn btn-outline btn-primary btn-sm" onClick={() => {
+            window.create_group_modal.showModal();
+          }}>
+            Create Group
+          </button>
+          <button className="btn btn-primary btn-sm" onClick={() => {
+            window.join_group_modal.showModal();
+          }}>
+            Join Group
+          </button>
+        </div>
+        <ul>
+          {groups.map(group => (
+            <li key={group.id}>
+              <Link to={`/group/${group.id}`}>
+                {group.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <CreateGroupModal createGroup={createGroup} />
+      <JoinGroupModal />
+    </div>
   )
 }
 
