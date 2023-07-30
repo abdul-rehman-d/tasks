@@ -1,6 +1,7 @@
 import { PropsWithChildren, useContext } from 'react'
 import { AuthContext } from '../contexts/AuthProvider';
 import { Navigate } from 'react-router-dom';
+import Navbar from './Navbar';
 
 function ProtectedRoute({ children }: PropsWithChildren) {
   const { currentUser, authIsReady } = useContext(AuthContext);
@@ -9,7 +10,12 @@ function ProtectedRoute({ children }: PropsWithChildren) {
     return <Navigate to="/login" />;
   }
   
-  return children;
+  return (
+    <>
+      <Navbar />
+      {children}
+    </>
+  );
 }
 
 export default ProtectedRoute

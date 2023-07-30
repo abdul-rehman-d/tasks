@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useEffect, useState } from "react"
-import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
+import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth } from "../firebase"
 
 export type AuthContextType = {
@@ -36,25 +36,27 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   }, [])
 
 
-  const login = useCallback((email: string, password: string) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+  const login = useCallback(async (email: string, password: string) => {
+    setAuthIsReady(false);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      setCurrentUser(userCredential.user);
+      return
+    } catch (error1) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
         setCurrentUser(userCredential.user);
-      })
-      .catch((error1) => {
-        createUserWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            setCurrentUser(userCredential.user);
-          })
-          .catch((error2) => {
-            console.log(error1);
-            console.log(error2);
-          });
-      });
+        return
+      } catch (error2) {
+        console.log(error1);
+        console.log(error2);
+        return
+      }
+    }
   }, []);
 
   const logout = useCallback(() => {
-    setCurrentUser(null);
+    signOut(auth)
   }, []);
 
 
