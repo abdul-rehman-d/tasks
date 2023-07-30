@@ -3,6 +3,7 @@ import Input from '../Input';
 import { AuthContext } from '../../contexts/AuthProvider';
 import { db } from '../../firebase';
 import { onValue, ref, set } from 'firebase/database';
+import { closeModal } from '../../utils/modal';
 
 function JoinGroupModal() {
 
@@ -58,7 +59,7 @@ function JoinGroupModal() {
 
     joinGroup(code)
       .then(() => {
-        window.join_group_modal.close();
+        closeModal('join_group_modal');
         event.currentTarget.reset();
       })
       .finally(() => {

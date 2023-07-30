@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Input from '../Input';
+import { closeModal } from '../../utils/modal';
 
 function CreateGroupModal({
   createGroup,
@@ -23,7 +24,7 @@ function CreateGroupModal({
     }
 
     createGroup(name);
-    window.create_group_modal.close();
+    closeModal('create_group_modal');
     event.currentTarget.reset();
   }
 
