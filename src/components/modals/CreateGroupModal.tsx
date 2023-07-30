@@ -24,8 +24,8 @@ function CreateGroupModal({
     }
 
     createGroup(name);
-    closeModal('create_group_modal');
     event.currentTarget.reset();
+    closeModal('create_group_modal');
   }
 
   return (

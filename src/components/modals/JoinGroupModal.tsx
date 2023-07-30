@@ -59,8 +59,8 @@ function JoinGroupModal() {
 
     joinGroup(code)
       .then(() => {
-        closeModal('join_group_modal');
         event.currentTarget.reset();
+        closeModal('join_group_modal');
       })
       .finally(() => {
         setIsSubmitting(false);
