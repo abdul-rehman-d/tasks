@@ -4,7 +4,7 @@ function Task({
   onDeleteTask,
 } : {
   task: Task;
-  onDeleteTask: (id: number) => void;
+  onDeleteTask: (id: string) => void;
 }) {
   return (
     <div>

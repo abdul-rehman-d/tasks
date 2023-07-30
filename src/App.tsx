@@ -9,7 +9,7 @@ function App() {
     setTasks((tasks) => [...tasks, task])
   }, [])
 
-  const handleDeleteTask = useCallback((id: number) => {
+  const handleDeleteTask = useCallback((id: string) => {
     setTasks((tasks) => tasks.filter((task) => task.id !== id))
   }, [])
 
