@@ -1,6 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useEffect, useState } from "react"
 import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth } from "../firebase"
+import Loader from "../components/Loader"
 
 export type AuthContextType = {
   currentUser: User | null
@@ -69,7 +70,10 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         authIsReady,
       }}
     >
-      {children}
+      {authIsReady
+      ? children
+      : <Loader />
+      }
     </AuthContext.Provider>
   )
 }
