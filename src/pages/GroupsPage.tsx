@@ -7,6 +7,12 @@ import { db } from "../firebase";
 import CreateGroupModal from "../components/modals/CreateGroupModal";
 import JoinGroupModal from "../components/modals/JoinGroupModal";
 
+function showModal(id: string) {
+  if (document) {
+    (document.getElementById(id) as HTMLFormElement).showModal();
+  }
+}
+
 function GroupsPage() {
   const { currentUser } = useContext(AuthContext);
   const [ groups, setGroups ] = useState<Group[]>([]);
@@ -69,12 +75,12 @@ function GroupsPage() {
         </h1>
         <div className="flex justify-end gap-2 mb-2">
           <button className="btn btn-outline btn-primary btn-sm" onClick={() => {
-            window.create_group_modal.showModal();
+            showModal('create_group_modal');
           }}>
             Create Group
           </button>
           <button className="btn btn-primary btn-sm" onClick={() => {
-            window.join_group_modal.showModal();
+            showModal('join_group_modal');
           }}>
             Join Group
           </button>
