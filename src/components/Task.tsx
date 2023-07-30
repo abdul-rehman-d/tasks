@@ -6,7 +6,7 @@ function Task({
 } : {
   task: Task;
   onDeleteTask: (id: string) => void;
-  onUpdateTask: (id: string) => void;
+  onUpdateTask: (id: string, status: boolean) => void;
 }) {
   return (
     <div>
@@ -24,7 +24,7 @@ function Task({
           id="task-status"
           checked={task.status}
           onChange={() => {
-            onUpdateTask(task.id)
+            onUpdateTask(task.id, !task.status)
           }}
         />
       </div>
