@@ -13,11 +13,25 @@ function App() {
     setTasks((tasks) => tasks.filter((task) => task.id !== id))
   }, [])
 
+  const handleUpdateTask = (id: string) => {
+    setTasks((tasks) => tasks.map((task) => {
+      if (task.id === id) {
+        task.status = !task.status
+      }
+      return task
+    }))
+  }
+
   return (
     <div>
       <InputForm onAddTask={handleAddTask} />
       {tasks.map((task) => (
-        <Task key={task.id} task={task} onDeleteTask={handleDeleteTask} />
+        <Task
+          key={task.id}
+          task={task}
+          onDeleteTask={handleDeleteTask}
+          onUpdateTask={handleUpdateTask}
+        />
       ))}
     </div>
   )

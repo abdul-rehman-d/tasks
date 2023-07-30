@@ -2,9 +2,11 @@
 function Task({
   task,
   onDeleteTask,
+  onUpdateTask,
 } : {
   task: Task;
   onDeleteTask: (id: string) => void;
+  onUpdateTask: (id: string) => void;
 }) {
   return (
     <div>
@@ -14,6 +16,18 @@ function Task({
         e.preventDefault()
         onDeleteTask(task.id)
       }}>delete</button>
+      <div>
+        <span>Completed: </span>
+        <input
+          type="checkbox"
+          name="task-status"
+          id="task-status"
+          checked={task.status}
+          onChange={() => {
+            onUpdateTask(task.id)
+          }}
+        />
+      </div>
     </div>
   )
 }
