@@ -69,6 +69,7 @@ function MainPage() {
             setTasks(newTasks);
             setIsLoading((prev) => prev > 0 ? prev - 1 : prev);
           } else {
+            setTasks([]);
             setIsLoading((prev) => prev > 0 ? prev - 1 : prev);
           }
         });
@@ -116,7 +117,7 @@ function MainPage() {
         update(ref(db, `groups/${id}/tasks/${taskId}`), {
           status: newStatus,
         });
-        toast('Task updated successfully!', { type: 'success' });
+        toast('Task updated successfully!', { type: 'info' });
       }
     } catch (e) {
       console.error("Error deleting task: ", e);
