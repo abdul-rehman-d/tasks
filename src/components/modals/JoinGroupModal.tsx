@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import Input from '../Input';
 import { AuthContext } from '../../contexts/AuthProvider';
 import { db } from '../../firebase';
-import { onValue, ref, set } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 import { closeModal } from '../../utils/modal';
 
 function JoinGroupModal() {
@@ -16,29 +16,27 @@ function JoinGroupModal() {
       setIsSubmitting(true);
       if (currentUser) {
         const dbRef = ref(db, `groups/${groupCode}`);
-        onValue(dbRef, (snapshot) => {
-          if (snapshot.exists()) {
-            const data = snapshot.val();
-            const members = data.members;
-            members[currentUser.uid] = true;
-            if (members[currentUser.uid] === true) {
-              setError('You are already a member of this group');
-              reject(false);
+        get(dbRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const data = snapshot.val();
+              const members = data.members;
+              if (members[currentUser.uid] === true) {
+                setError('You are already a member of this group');
+                reject(false);
+              } else {
+                set(ref(db, `groups/${groupCode}/members/${currentUser.uid}`), true).then(() => {
+                  resolve(true);
+                }).catch((e) => {
+                  console.error('Error joining group: ', e);
+                  reject(e);
+                });
+              }
             } else {
-              set(ref(db, `groups/${groupCode}/members/${currentUser.uid}`), true).then(() => {
-                resolve(true);
-              }).catch((e) => {
-                console.error('Error joining group: ', e);
-                reject(e);
-              });
+              setError('Group does not exist');
+              reject(false);
             }
-          } else {
-            setError('Group does not exist');
-            reject(false);
-          }
-        }, {
-          onlyOnce: true
-        });
+          })
       }
     });
   }
