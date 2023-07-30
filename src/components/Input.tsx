@@ -24,7 +24,7 @@ const Input = ({
           name={name}
           id={id}
           placeholder={placeholder}
-          className="w-full input input-bordered input-primary"
+          className="w-full input input-bordered input-primary bg-transparent"
         />
         {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
