@@ -3,11 +3,12 @@ import InputForm from "../components/InputForm"
 import Task from "../components/Task"
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthProvider";
-import { onValue, push, ref, set, update } from "firebase/database";
+import { onValue, orderByChild, push, query, ref, set, update } from "firebase/database";
 import { db } from "../firebase";
 import Loader from "../components/Loader";
 import CopyGroupCodeButton from "../components/CopyGroupCodeButton";
 import { useToast } from "../contexts/ToastContainer";
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 function MainPage() {
   const { id } = useParams();
@@ -52,20 +53,22 @@ function MainPage() {
     async function getTasks() {
       if (currentUser && id) {
         console.log(currentUser.uid, 'running query')
-        const dbRef = ref(db, `groups/${id}/tasks`);
+        const dbRef = query(ref(db, `groups/${id}/tasks`), orderByChild('order'));
         unsubscribe = onValue(dbRef, (snapshot) => {
           if (snapshot.exists()) {
-            const data = snapshot.val();
             const newTasks: Task[] = [];
-            for (const key in data) {
+            snapshot.forEach((child) => {
+              const data = child.val();
               newTasks.push({
-                id: key,
-                title: data[key].title,
-                status: data[key].status,
-                description: data[key].description,
-                createdBy: data[key].createdBy,
+                id: child.key,
+                title: data.title,
+                status: data.status,
+                description: data.description,
+                order: data.order,
+                createdBy: data.createdBy,
               });
-            }
+            })
+            console.log('newTasks:', newTasks)
             setTasks(newTasks);
             setIsLoading((prev) => prev > 0 ? prev - 1 : prev);
           } else {
@@ -92,13 +95,14 @@ function MainPage() {
           status: task.status,
           description: task.description,
           createdBy: currentUser.uid,
+          order: tasks.length,
         });
         toast('Task created successfully!', { type: 'success' });
       }
     } catch (e) {
       console.error("Error creating task: ", e);
     }
-  }, [currentUser, id])
+  }, [currentUser, id, tasks])
 
   const handleDeleteTask = useCallback((taskId: string) => {
     try {
@@ -124,6 +128,27 @@ function MainPage() {
     }
   }, [currentUser, id])
 
+  const handleReorderTask = useCallback((tasks: Task[]) => {
+    try {
+      if (currentUser) {
+        const docs: {[k: string]: Omit<Task, 'id'>} = {}
+        for (let i = 0; i < tasks.length; i++) {
+          docs[tasks[i].id] = {
+            order: i,
+            createdBy: tasks[i].createdBy,
+            description: tasks[i].description,
+            status: tasks[i].status,
+            title: tasks[i].title,
+          };
+        }
+        set(ref(db, `groups/${id}/tasks`), docs);
+        toast('Task updated successfully!', { type: 'info' });
+      }
+    } catch (e) {
+      console.error("Error deleting task: ", e);
+    }
+  }, [currentUser, id])
+
   return (
     <div className="flex justify-center p-4 bg-base-200" style={{ minHeight: 'calc(100vh - 64px)'}}>
       {isLoading ? (
@@ -135,16 +160,52 @@ function MainPage() {
           </h1>
           <CopyGroupCodeButton id={id} />
           <InputForm onAddTask={handleAddTask} />
-          <div className="flex flex-col gap-4 my-4 items-center">
-            {tasks.map((task) => (
-              <Task
-                key={task.id}
-                task={task}
-                onDeleteTask={handleDeleteTask}
-                onUpdateTask={handleUpdateTask}
-              />
-            ))}
-          </div>
+          <DragDropContext
+            onDragEnd={(result) => {
+              if (!result.destination) {
+                return;
+              }
+              console.log('result:', result)
+              const items = Array.from(tasks);
+              const [reorderedItem] = items.splice(result.source.index, 1);
+              items.splice(result.destination.index, 0, reorderedItem);
+              console.log('result items:', items);
+              handleReorderTask(items);
+            }}
+          >
+            <Droppable droppableId="droppable-1" type="PERSON">
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  style={{ backgroundColor: snapshot.isDraggingOver ? '' : '' }}
+                  className={
+                    "flex flex-col gap-4 my-4 items-center"
+                    + (snapshot.isDraggingOver ? ' bg-primary-content' : '')
+                  }
+                  {...provided.droppableProps}
+                >
+                  {provided.placeholder}
+                  {tasks.map((task, index) => (
+                    <Draggable draggableId={"draggable-" + index} index={index} key={task.id}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <Task
+                            task={task}
+                            onDeleteTask={handleDeleteTask}
+                            onUpdateTask={handleUpdateTask}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
       )}
     </div>
