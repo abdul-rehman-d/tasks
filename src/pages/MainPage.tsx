@@ -7,6 +7,7 @@ import { onValue, push, ref, set, update } from "firebase/database";
 import { db } from "../firebase";
 import Loader from "../components/Loader";
 import CopyGroupCodeButton from "../components/CopyGroupCodeButton";
+import { useToast } from "../contexts/ToastContainer";
 
 function MainPage() {
   const { id } = useParams();
@@ -15,7 +16,9 @@ function MainPage() {
   const [ isLoading, setIsLoading ] = useState<number>(2);
   const [ groupName, setGroupName ] = useState<string>('');
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const toast = useToast();
 
   useEffect(() => {
     let unsubscribe: () => void;
@@ -89,6 +92,7 @@ function MainPage() {
           description: task.description,
           createdBy: currentUser.uid,
         });
+        toast('Task created successfully!', { type: 'success' });
       }
     } catch (e) {
       console.error("Error creating task: ", e);
@@ -99,6 +103,7 @@ function MainPage() {
     try {
       if (currentUser) {
         set(ref(db, `groups/${id}/tasks/${taskId}`), null);
+        toast('Task deleted successfully!', { type: 'info' });
       }
     } catch (e) {
       console.error("Error deleting task: ", e);
@@ -111,6 +116,7 @@ function MainPage() {
         update(ref(db, `groups/${id}/tasks/${taskId}`), {
           status: newStatus,
         });
+        toast('Task updated successfully!', { type: 'success' });
       }
     } catch (e) {
       console.error("Error deleting task: ", e);
