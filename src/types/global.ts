@@ -7,13 +7,13 @@ type Task = {
   createdBy: string;
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type User = {
-  id: string;
-  email: string;
-  password: string;
+// type User = {
+//   id: string;
+//   email: string;
+//   password: string;
 
-  groups: string[];
-}
+//   groups: string[];
+// }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Group = {
   id: string;

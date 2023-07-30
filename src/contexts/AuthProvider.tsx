@@ -1,4 +1,6 @@
-import { PropsWithChildren, createContext, useCallback, useState } from "react"
+import { PropsWithChildren, createContext, useCallback, useEffect, useState } from "react"
+import { getAuth, User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
+import "../firebase"
 
 export type AuthContextType = {
   currentUser: User | null
@@ -19,14 +21,33 @@ export const AuthContext = createContext<AuthContextType>({
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [ currentUser, setCurrentUser ] = useState<User | null>(null);
   const [ groups, setGroups ] = useState<Group[]>([]);
+  const auth = getAuth();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
+      }
+    });
+  }, [])
 
   const login = useCallback((email: string, password: string) => {
-    setCurrentUser({
-      id: '1',
-      email,
-      password,
-      groups: [],
-    });
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        setCurrentUser(userCredential.user);
+      })
+      .catch((error1) => {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            setCurrentUser(userCredential.user);
+          })
+          .catch((error2) => {
+            console.log(error1);
+            console.log(error2);
+          });
+      });
   }, []);
 
   const logout = useCallback(() => {
