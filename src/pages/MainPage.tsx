@@ -189,8 +189,8 @@ function MainPage() {
                   {...provided.droppableProps}
                 >
                   {provided.placeholder}
-                  {tasks.map((task, index) => (
-                    <Draggable draggableId={"draggable-" + index} index={index} key={task.id}>
+                  {tasks.map((task) => (
+                    <Draggable draggableId={task.id} index={task.order} key={task.id}>
                       {(provided) => (
                         <div
                           ref={provided.innerRef}
