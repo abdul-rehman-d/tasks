@@ -125,7 +125,7 @@ function MainPage() {
   }, [currentUser, id])
 
   return (
-    <div className="flex justify-center p-4">
+    <div className="flex justify-center p-4 bg-base-200" style={{ minHeight: 'calc(100vh - 64px)'}}>
       {isLoading ? (
         <Loader label="Loading group..." />
       ) : (
@@ -135,14 +135,16 @@ function MainPage() {
           </h1>
           <CopyGroupCodeButton id={id} />
           <InputForm onAddTask={handleAddTask} />
-          {tasks.map((task) => (
-            <Task
-              key={task.id}
-              task={task}
-              onDeleteTask={handleDeleteTask}
-              onUpdateTask={handleUpdateTask}
-            />
-          ))}
+          <div className="flex flex-col gap-4 my-4 items-center">
+            {tasks.map((task) => (
+              <Task
+                key={task.id}
+                task={task}
+                onDeleteTask={handleDeleteTask}
+                onUpdateTask={handleUpdateTask}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
