@@ -19,7 +19,13 @@ function ToastContainer({children}: PropsWithChildren) {
   const toast = useCallback((message: string, options?: ToastOptions) => {
     if (document && containerRef.current) {
       const div = document.createElement('div')
-      div.classList.add('alert', `alert-${options?.type || 'info'}}`)
+      const alertClass = (
+        options?.type === 'success' ? 'alert-success' :
+        options?.type === 'error' ? 'alert-error' :
+        options?.type === 'warning' ? 'alert-warning' :
+        'alert-info'
+      )
+      div.classList.add('alert', alertClass, 'z-10')
       const id = `toast-${(Date.now())}`
       div.id = id
       const span = document.createElement('span')
@@ -39,7 +45,7 @@ function ToastContainer({children}: PropsWithChildren) {
       {children}
       <div
         id="toast-container"
-        className='toast toast-top toast-end anim'
+        className='toast toast-bottom toast-end'
         ref={containerRef}
       />
     </ToastContext.Provider>
