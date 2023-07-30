@@ -6,6 +6,7 @@ import { AuthContext } from "../contexts/AuthProvider";
 import { onValue, push, ref, set, update } from "firebase/database";
 import { db } from "../firebase";
 import Loader from "../components/Loader";
+import CopyGroupCodeButton from "../components/CopyGroupCodeButton";
 
 function MainPage() {
   const { id } = useParams();
@@ -123,8 +124,9 @@ function MainPage() {
       ) : (
         <div className="w-full max-w-lg">
           <h1 className="text-3xl font-semibold text-center text-primary mb-2">
-          {groupName}
+            {groupName}
           </h1>
+          <CopyGroupCodeButton id={id} />
           <InputForm onAddTask={handleAddTask} />
           {tasks.map((task) => (
             <Task
