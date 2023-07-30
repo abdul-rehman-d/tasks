@@ -8,6 +8,7 @@ function CopyGroupCodeButton({
   const [ isCopied, setIsCopied ] = useState<boolean>(false);
 
   function copyToClipboard() {
+    if (!id) return;
     navigator.clipboard.writeText(id).then(() => {
       setIsCopied(true);
       setTimeout(() => {
