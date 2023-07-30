@@ -1,9 +1,62 @@
-import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthProvider"
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { onValue, push, ref } from "firebase/database"
+
+import { AuthContext } from "../contexts/AuthProvider"
+import { db } from "../firebase";
 
 function GroupsPage() {
-  const { groups, createGroup } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
+  const [ groups, setGroups ] = useState<Group[]>([]);
+
+  useEffect(() => {
+    let unsubscribe: () => void;
+    async function getGroups() {
+      if (currentUser) {
+        console.log(currentUser.uid, 'running query')
+        const dbRef = ref(db, 'groups/');
+        unsubscribe = onValue(dbRef, (snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            const newGroups: Group[] = [];
+            for (const key in data) {
+              if (currentUser.uid in data[key].members) {
+                newGroups.push({
+                  id: key,
+                  name: data[key].name,
+                  members: data[key].members,
+                });
+              }
+            }
+            setGroups(newGroups);
+          }
+        });
+      }
+    }
+    getGroups();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    }
+  }, [currentUser])
+
+  const createGroup = useCallback(async (name: string) => {
+    try {
+      console.log('name', name)
+      if (currentUser && name) {
+        push(ref(db, 'groups/'), {
+          name,
+          members: {
+            [currentUser.uid]: true,
+          },
+        });
+      }
+    } catch (e) {
+      console.error("Error creating group: ", e);
+    }
+  }, [currentUser]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
