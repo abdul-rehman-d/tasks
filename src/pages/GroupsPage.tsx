@@ -79,10 +79,10 @@ function GroupsPage() {
             Join Group
           </button>
         </div>
-        <ul>
+        <ul className="w-full flex flex-col gap-2 items-center mt-4">
           {groups.map(group => (
             <li key={group.id}>
-              <Link to={`/group/${group.id}`}>
+              <Link to={`/group/${group.id}`} className="btn btn-neutral btn-md w-max">
                 {group.name}
               </Link>
             </li>
