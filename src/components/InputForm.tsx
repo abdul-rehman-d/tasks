@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { v4 as uuid } from 'uuid';
+import Input from "./Input";
 
 type Errors = {
   title: string;
@@ -56,28 +57,24 @@ function InputForm({
     form.reset()
   }
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <input
-          name="titleInput"
-          type="text"
-          placeholder="Enter Title"
-        />
-        {errors.title && <span style={{ color: 'red' }}>
-          {errors.title}
-        </span>}
-      </div>
-      <div>
-        <input
-          name="descriptionInput"
-          type="text"
-          placeholder="Enter Description"
-        />
-        {errors.description && <span style={{ color: 'red' }}>
-          {errors.description}
-        </span>}
-      </div>
-      <button type="submit">Add</button>
+    <form onSubmit={handleSubmit} className="flex text-sm gap-2">
+      <Input
+        name="titleInput"
+        type="text"
+        placeholder="Enter Title"
+        id="titleInput"
+        label=""
+        error={errors.title}
+      />
+      <Input
+        name="descriptionInput"
+        type="text"
+        placeholder="Enter Description"
+        id="descriptionInput"
+        label=""
+        error={errors.description}
+      />
+      <button className="btn btn-primary mt-4" type="submit">Add</button>
     </form>
   )
 }

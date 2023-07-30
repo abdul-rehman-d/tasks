@@ -1,15 +1,17 @@
 import { useCallback, useContext, useEffect, useState } from "react"
 import InputForm from "../components/InputForm"
 import Task from "../components/Task"
-import { useParams } from "react-router-dom";
+import { redirect, useParams } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthProvider";
 import { onValue, push, ref, set, update } from "firebase/database";
 import { db } from "../firebase";
+import Loader from "../components/Loader";
 
 function MainPage() {
   const { id } = useParams();
   const { currentUser } = useContext(AuthContext);
   const [ tasks, setTasks ] = useState<Task[]>([])
+  const [ isLoading, setIsLoading ] = useState<number>(2);
   const [ groupName, setGroupName ] = useState<string>('');
 
   useEffect(() => {
@@ -22,6 +24,9 @@ function MainPage() {
           if (snapshot.exists()) {
             const data = snapshot.val();
             setGroupName(data.name);
+            setIsLoading((prev) => prev > 0 ? prev - 1 : prev);
+          } else {
+            redirect('/')
           }
         });
       }
@@ -55,6 +60,9 @@ function MainPage() {
               });
             }
             setTasks(newTasks);
+            setIsLoading((prev) => prev > 0 ? prev - 1 : prev);
+          } else {
+            setIsLoading((prev) => prev > 0 ? prev - 1 : prev);
           }
         });
       }
@@ -105,22 +113,26 @@ function MainPage() {
     }
   }, [currentUser, id])
 
-  if (!groupName) {
-    return <div>Loading...</div>
-  }
-
   return (
-    <div>
-      <h1>{groupName}</h1>
-      <InputForm onAddTask={handleAddTask} />
-      {tasks.map((task) => (
-        <Task
-          key={task.id}
-          task={task}
-          onDeleteTask={handleDeleteTask}
-          onUpdateTask={handleUpdateTask}
-        />
-      ))}
+    <div className="flex justify-center p-4">
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className="w-full max-w-lg">
+          <h1 className="text-3xl font-semibold text-center text-primary mb-2">
+          {groupName}
+          </h1>
+          <InputForm onAddTask={handleAddTask} />
+          {tasks.map((task) => (
+            <Task
+              key={task.id}
+              task={task}
+              onDeleteTask={handleDeleteTask}
+              onUpdateTask={handleUpdateTask}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
