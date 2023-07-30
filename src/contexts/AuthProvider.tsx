@@ -6,15 +6,18 @@ export type AuthContextType = {
   currentUser: User | null
   login: (email: string, password: string) => void
   logout: () => void
+  authIsReady: boolean
 }
 
 export const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   login: () => {},
   logout: () => {},
+  authIsReady: false,
 })
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
+  const [ authIsReady, setAuthIsReady ] = useState<boolean>(false);
   const [ currentUser, setCurrentUser ] = useState<User | null>(null);
 
   useEffect(() => {
@@ -24,6 +27,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       } else {
         setCurrentUser(null);
       }
+      setAuthIsReady(true);
     });
   
     return () => {
@@ -60,6 +64,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         currentUser,
         login,
         logout,
+        authIsReady,
       }}
     >
       {children}
