@@ -1,8 +1,10 @@
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import InputForm from "../components/InputForm"
 import Task from "../components/Task"
+import { useParams } from "react-router-dom";
 
 function MainPage() {
+  let { id } = useParams();
   const [tasks, setTasks] = useState<Task[]>([])
 
   const handleAddTask = useCallback((task: Task) => {
