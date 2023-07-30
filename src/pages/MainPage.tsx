@@ -87,7 +87,11 @@ function MainPage() {
     }
   }, [currentUser, id])
 
-  const handleAddTask = useCallback((task: Task) => {
+  const handleAddTask = useCallback((task: {
+    title: string;
+    description: string;
+    status: boolean;
+  }) => {
     try {
       if (currentUser) {
         push(ref(db, `groups/${id}/tasks`), {

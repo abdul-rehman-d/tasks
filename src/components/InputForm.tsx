@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { v4 as uuid } from 'uuid';
 import Input from "./Input";
 
 type Errors = {
   title: string;
   description: string;
+}
+
+type Task = {
+  title: string;
+  description: string;
+  status: boolean;
 }
 
 function InputForm({
@@ -47,11 +52,9 @@ function InputForm({
     }
     
     const task: Task = {
-      id: uuid(),
       title: form.titleInput.value,
       description: form.descriptionInput.value,
       status: false,
-      createdBy: '1'
     }
     onAddTask(task)
     form.reset()
