@@ -7,10 +7,12 @@ import { db } from "../firebase";
 import CreateGroupModal from "../components/modals/CreateGroupModal";
 import JoinGroupModal from "../components/modals/JoinGroupModal";
 import { openModal } from "../utils/modal";
+import Loader from "../components/Loader";
 
 function GroupsPage() {
   const { currentUser } = useContext(AuthContext);
   const [ groups, setGroups ] = useState<Group[]>([]);
+  const [ isLoading, setIsLoading ] = useState<boolean>(true);
 
   useEffect(() => {
     let unsubscribe: () => void;
@@ -33,6 +35,7 @@ function GroupsPage() {
             }
             setGroups(newGroups);
           }
+          setIsLoading(false);
         });
       }
     }
@@ -68,27 +71,33 @@ function GroupsPage() {
         <h1 className="text-3xl font-semibold text-center text-primary mb-2">
           Groups
         </h1>
-        <div className="flex justify-end gap-2 mb-2">
-          <button className="btn btn-outline btn-primary btn-sm" onClick={() => {
-            openModal('create_group_modal');
-          }}>
-            Create Group
-          </button>
-          <button className="btn btn-primary btn-sm" onClick={() => {
-            openModal('join_group_modal');
-          }}>
-            Join Group
-          </button>
-        </div>
-        <ul className="w-full flex flex-col gap-2 items-center mt-4">
-          {groups.map(group => (
-            <li key={group.id}>
-              <Link to={`/group/${group.id}`} className="btn btn-neutral btn-md w-max">
-                {group.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {isLoading ? (
+          <Loader label="Loading groups..." />
+        ) : (
+          <>
+            <div className="flex justify-end gap-2 mb-2">
+              <button className="btn btn-outline btn-primary btn-sm" onClick={() => {
+                openModal('create_group_modal');
+              }}>
+                Create Group
+              </button>
+              <button className="btn btn-primary btn-sm" onClick={() => {
+                openModal('join_group_modal');
+              }}>
+                Join Group
+              </button>
+            </div>
+            <ul className="w-full flex flex-col gap-2 items-center mt-4">
+              {groups.map(group => (
+                <li key={group.id}>
+                  <Link to={`/group/${group.id}`} className="btn btn-neutral btn-md w-max">
+                    {group.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
       <CreateGroupModal createGroup={createGroup} />
       <JoinGroupModal />

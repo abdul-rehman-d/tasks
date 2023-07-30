@@ -72,7 +72,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     >
       {authIsReady
       ? children
-      : <Loader />
+      : <Loader label="Checking Session..." />
       }
     </AuthContext.Provider>
   )

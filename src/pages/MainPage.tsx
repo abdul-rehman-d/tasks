@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react"
 import InputForm from "../components/InputForm"
 import Task from "../components/Task"
-import { redirect, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthProvider";
 import { onValue, push, ref, set, update } from "firebase/database";
 import { db } from "../firebase";
@@ -13,6 +13,8 @@ function MainPage() {
   const [ tasks, setTasks ] = useState<Task[]>([])
   const [ isLoading, setIsLoading ] = useState<number>(2);
   const [ groupName, setGroupName ] = useState<string>('');
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     let unsubscribe: () => void;
@@ -26,7 +28,8 @@ function MainPage() {
             setGroupName(data.name);
             setIsLoading((prev) => prev > 0 ? prev - 1 : prev);
           } else {
-            redirect('/')
+            console.log('group does not exist')
+            navigate('/')
           }
         });
       }
@@ -116,7 +119,7 @@ function MainPage() {
   return (
     <div className="flex justify-center p-4">
       {isLoading ? (
-        <Loader />
+        <Loader label="Loading group..." />
       ) : (
         <div className="w-full max-w-lg">
           <h1 className="text-3xl font-semibold text-center text-primary mb-2">
