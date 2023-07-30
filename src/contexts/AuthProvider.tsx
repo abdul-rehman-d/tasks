@@ -1,6 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useEffect, useState } from "react"
-import { getAuth, User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
-import "../firebase"
+import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
+import { auth, db } from "../firebase"
+import { onValue, push, ref } from "firebase/database"
 
 export type AuthContextType = {
   currentUser: User | null
@@ -21,17 +22,53 @@ export const AuthContext = createContext<AuthContextType>({
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [ currentUser, setCurrentUser ] = useState<User | null>(null);
   const [ groups, setGroups ] = useState<Group[]>([]);
-  const auth = getAuth();
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user);
       } else {
         setCurrentUser(null);
       }
     });
+  
+    return () => {
+      unsubscribe();
+    }
   }, [])
+
+  useEffect(() => {
+    let unsubscribe: () => void;
+    async function getGroups() {
+      if (currentUser) {
+        console.log(currentUser.uid, 'running query')
+        const dbRef = ref(db, 'groups/');
+        unsubscribe = onValue(dbRef, (snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            const newGroups: Group[] = [];
+            for (const key in data) {
+              if (currentUser.uid in data[key].members) {
+                newGroups.push({
+                  id: key,
+                  name: data[key].name,
+                  members: data[key].members,
+                });
+              }
+            }
+            setGroups(newGroups);
+          }
+        });
+      }
+    }
+    getGroups();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    }
+  }, [currentUser])
 
   const login = useCallback((email: string, password: string) => {
     signInWithEmailAndPassword(auth, email, password)
@@ -54,13 +91,21 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     setCurrentUser(null);
   }, []);
 
-  const createGroup = useCallback((name: string) => {
-    setGroups((groups) => [...groups, {
-      id: String(groups.length + 1),
-      name,
-      tasks: [],
-    }]);
-  }, []);
+  const createGroup = useCallback(async (name: string) => {
+    try {
+      console.log('name', name)
+      if (currentUser && name) {
+        push(ref(db, 'groups/'), {
+          name,
+          members: {
+            [currentUser.uid]: true,
+          },
+        });
+      }
+    } catch (e) {
+      console.error("Error creating group: ", e);
+    }
+  }, [currentUser]);
 
   return (
     <AuthContext.Provider

@@ -19,5 +19,7 @@ type Group = {
   id: string;
   name: string;
 
-  tasks: Task[];
+  members: {
+    [key: string]: string;
+  };
 }
