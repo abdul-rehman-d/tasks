@@ -20,20 +20,9 @@ npm run dev
 - Rearrange tasks by dragging and dropping
 
 ## Screenshots
-<div style="display:flex; gap: 5px;">
-   <div style="width:33%;">
-      <span>Login Page</span>
-      <img src="./screenshots/01.jpg" width="100%" height="auto" alt="Login Page">
-   </div>
-   <div style="width:33%;">
-      <span>Groups List Page</span>
-      <img src="./screenshots/02.jpg" width="100%" height="auto" alt="Groups List Page">
-   </div>
-   <div style="width:33%;">
-      <span>Tasks Page</span>
-      <img src="./screenshots/03.jpg" width="100%" height="auto" alt="Tasks Page">
-   </div>
-</div>
+Login Page                 |  Groups List Page          | Tasks Page
+:-------------------------:|:--------------------------:|:--------------------------:
+![](./screenshots/01.jpg)  |  ![](./screenshots/02.jpg) | ![](./screenshots/02.jpg) 
 
 ## Live Preview
 This Web App is deployed at: [https://technexia-job-test.abdulrehmandev.me/](https://technexia-job-test.abdulrehmandev.me/)
