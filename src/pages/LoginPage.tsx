@@ -8,7 +8,7 @@ type Errors = {
 }
 
 function LoginPage() {
-  const { login, authIsReady } = useContext(AuthContext);
+  const { login, authIsReady, isLoggingIn } = useContext(AuthContext);
 
   const [errors, setErrors] = useState<{
     email?: string;
@@ -34,8 +34,9 @@ function LoginPage() {
     setErrors(errors);
 
     if (email && password) {
-      await login(email, password);
-      form.reset();
+      if (await login(email, password)) {
+        form.reset();
+      }
     }
     
     setIsSubmitting(false);
@@ -65,7 +66,7 @@ function LoginPage() {
               error={errors.password ?? ''}
             />
             <div>
-                <button className="btn btn-primary" disabled={isSubmitting || !authIsReady}>
+                <button className="btn btn-primary" disabled={isSubmitting || !authIsReady || isLoggingIn}>
                   Login
                 </button>
             </div>
