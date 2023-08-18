@@ -25,4 +25,4 @@ Login Page                 |  Groups List Page          | Tasks Page
 ![](./screenshots/01.jpg)  |  ![](./screenshots/02.jpg) | ![](./screenshots/02.jpg) 
 
 ## Live Preview
-This Web App is deployed at: [https://technexia-job-test.abdulrehmandev.me/](https://technexia-job-test.abdulrehmandev.me/)
+This Web App is deployed at: [https://tasks.abdulrehmandev.me/](https://tasks.abdulrehmandev.me/)
